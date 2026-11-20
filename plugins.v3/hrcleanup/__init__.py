@@ -151,7 +151,7 @@ class HrCleanup(_PluginBase):
     plugin_desc = "订阅下载经媒体整理复制到 115 网盘后，做种达标且超过 H&R+8 小时，自动删除种子、下载条目与硬盘原始文件（115 副本保留）"
     plugin_icon = "mdi-broom"
     plugin_color = "#22D3EE"
-    plugin_version = "1.3.0"
+    plugin_version = "1.3.1"
     plugin_author = "RDevils7"
     author_url = "https://github.com/RDevils7"
     plugin_config_prefix = "hrcleanup_"
@@ -1142,6 +1142,7 @@ class HrCleanup(_PluginBase):
                 "path": "/run",
                 "endpoint": self.api_run,
                 "methods": ["GET"],
+                "auth": "bear",
                 "summary": "立即扫描并执行（按当前 dry_run 配置）",
                 "description": "按四闸门扫描下载历史并清理；可传 ?hash= 只处理单个种子",
             },
@@ -1149,6 +1150,7 @@ class HrCleanup(_PluginBase):
                 "path": "/preview",
                 "endpoint": self.api_preview,
                 "methods": ["GET"],
+                "auth": "bear",
                 "summary": "只判定不执行（强制演练）",
                 "description": "返回本次将会删除的候选与跳过原因，不做任何删除",
             },
