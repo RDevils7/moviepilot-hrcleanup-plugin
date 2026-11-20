@@ -151,7 +151,7 @@ class HrCleanup(_PluginBase):
     plugin_desc = "订阅下载经媒体整理复制到 115 网盘后，做种达标且超过 H&R+8 小时，自动删除种子、下载条目与硬盘原始文件（115 副本保留）"
     plugin_icon = "mdi-broom"
     plugin_color = "#22D3EE"
-    plugin_version = "1.3.1"
+    plugin_version = "1.3.2"
     plugin_author = "RDevils7"
     author_url = "https://github.com/RDevils7"
     plugin_config_prefix = "hrcleanup_"
@@ -1131,10 +1131,21 @@ class HrCleanup(_PluginBase):
     # API（手动触发）
     # ==================================================================
     def api_run(self, hash: Optional[str] = None) -> Dict[str, Any]:
-        return self._scan(only_hash=hash, force_dry_run=None)
+        # 前端数据页按钮走宿主标准响应 envelope：{success, message, data}
+        try:
+            data = self._scan(only_hash=hash, force_dry_run=None)
+        except Exception as err:  # noqa: BLE001
+            logger.error(f"HrCleanup api_run 执行失败：{err}")
+            return {"success": False, "message": f"执行失败：{err}", "data": None}
+        return {"success": True, "message": "扫描完成", "data": data}
 
     def api_preview(self, hash: Optional[str] = None) -> Dict[str, Any]:
-        return self._scan(only_hash=hash, force_dry_run=True)
+        try:
+            data = self._scan(only_hash=hash, force_dry_run=True)
+        except Exception as err:  # noqa: BLE001
+            logger.error(f"HrCleanup api_preview 执行失败：{err}")
+            return {"success": False, "message": f"执行失败：{err}", "data": None}
+        return {"success": True, "message": "预览完成", "data": data}
 
     def get_api(self) -> List[Dict[str, Any]]:
         return [
