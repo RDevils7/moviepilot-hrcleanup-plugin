@@ -151,7 +151,7 @@ class HrCleanup(_PluginBase):
     plugin_desc = "订阅下载经媒体整理复制到 115 网盘后，做种达标且超过 H&R+8 小时，自动删除种子、下载条目与硬盘原始文件（115 副本保留）"
     plugin_icon = "mdi-broom"
     plugin_color = "#22D3EE"
-    plugin_version = "1.2.0"
+    plugin_version = "1.3.0"
     plugin_author = "RDevils7"
     author_url = "https://github.com/RDevils7"
     plugin_config_prefix = "hrcleanup_"
@@ -1343,7 +1343,77 @@ class HrCleanup(_PluginBase):
     # 详情页
     # ==================================================================
     def get_page(self) -> List[Dict[str, Any]]:
+        run_label = "运行一次（实删）" if not self._dry_run else "运行一次（演练）"
         pages: List[Dict[str, Any]] = [
+            # ---------------- 操作按钮 ----------------
+            {
+                "component": "VRow",
+                "props": {"align": "center"},
+                "content": [
+                    {
+                        "component": "VCol",
+                        "props": {"cols": 12, "md": 3},
+                        "content": [
+                            {
+                                "component": "VBtn",
+                                "props": {
+                                    "color": "warning" if not self._dry_run else "primary",
+                                    "variant": "flat",
+                                    "prependIcon": "mdi-play",
+                                    "block": True,
+                                },
+                                "text": run_label,
+                                "events": {
+                                    "click": {
+                                        "api": "plugin/HrCleanup/run",
+                                        "method": "get",
+                                    }
+                                },
+                            }
+                        ],
+                    },
+                    {
+                        "component": "VCol",
+                        "props": {"cols": 12, "md": 3},
+                        "content": [
+                            {
+                                "component": "VBtn",
+                                "props": {
+                                    "color": "secondary",
+                                    "variant": "tonal",
+                                    "prependIcon": "mdi-eye-outline",
+                                    "block": True,
+                                },
+                                "text": "仅预览（不删除）",
+                                "events": {
+                                    "click": {
+                                        "api": "plugin/HrCleanup/preview",
+                                        "method": "get",
+                                    }
+                                },
+                            }
+                        ],
+                    },
+                    {
+                        "component": "VCol",
+                        "props": {"cols": 12, "md": 6},
+                        "content": [
+                            {
+                                "component": "div",
+                                "props": {"class": "text-caption text-medium-emphasis"},
+                                "text": (
+                                    "点击「运行一次」立即按当前配置扫描并处理一次（不受定时任务影响）。"
+                                    + (
+                                        "当前为演练模式，只会统计命中、不会真正删除；需要实删请先在配置里关闭 dry_run。"
+                                        if self._dry_run
+                                        else "当前为实删模式：会真正删除下载器种子、下载记录与硬盘下载文件（115 网盘副本保留）。"
+                                    )
+                                ),
+                            }
+                        ],
+                    },
+                ],
+            },
             {
                 "component": "VRow",
                 "content": [
